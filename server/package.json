@@ -1,0 +1,39 @@
+{
+  "name": "boomtown-server",
+  "version": "1.0.0",
+  "description": "Server-side code for RED Academy's Boomtown project.",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest --verbose --watch",
+    "start": "NODE_ENV=production node main.js",
+    "start:dev": "NODE_ENV=development nodemon main.js "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.0.0-rc.0",
+    "apollo-server-express": "^2.0.0-rc.0",
+    "apollo-upload-server": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-history-api-fallback": "^2.2.1",
+    "graphql": "^0.13.2",
+    "graphql-playground-middleware-express": "^1.7.0",
+    "jsonwebtoken": "^8.3.0",
+    "pg": "^7.4.3",
+    "stringstream": "0.0.6"
+  },
+  "devDependencies": {
+    "jest-cli": "^23.2.0",
+    "nodemon": "^1.17.5"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/resolvers"
+    ]
+  }
+}
