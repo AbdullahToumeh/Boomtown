@@ -85,13 +85,18 @@ module.exports = function(postgres) {
        *  Here is an example throw statement: throw 'User was not found.'
        *  Customize your throw statements so the message can be used by the client.
        */
-
+      try {
       const user = await postgres.query(findUserQuery)
-      return user.rows[0];
+      if(!user) throw 'there is no user'
+      return user.rows[0]
+      } catch(e) {
+        throw 'there is no user'
+      }
       // -------------------------------
     },
 
     async getItems(idToOmit) {
+      try {
       const items = await postgres.query({
         /**
          *  @TODO: Advanced queries
@@ -105,14 +110,19 @@ module.exports = function(postgres) {
          */
 
         // text: `SELECT * FROM items ${idToOmit ? 'WHERE items.ownerid != $1':''}`,
-        // values: idToOmit ? [idToOmit] : []
+        // values: idToOmit ? [idToOmit] : 
         text: `SELECT * FROM items WHERE (ownerid != $1 AND borrowerid IS NULL) OR ($1 IS NULL)`,
         values: [idToOmit]
       })
+      if(!items)throw 'there is no items'
       return items.rows
+    } catch(e) {
+      throw 'there is no items'
+    }
     },
 
     async getItemsForUser(id) {
+      try {
       const items = await postgres.query({
         /**
          *  @TODO: Advanced queries
@@ -121,9 +131,15 @@ module.exports = function(postgres) {
         text: `SELECT * FROM items WHERE items.ownerid = $1;`,
         values: [id]
       })
+      if(!items)throw 'there is no items'
       return items.rows
+    } catch(e) {
+      throw 'there is no items'      
+    }
     },
+
     async getBorrowedItemsForUser(id) {
+      try {
       const items = await postgres.query({
         /**
          *  @TODO: Advanced queries
@@ -132,16 +148,26 @@ module.exports = function(postgres) {
         text: `SELECT * FROM items WHERE items.borrowerid = $1;`,
         values: [id]
       })
+      if(!items)throw 'there is no items'
       return items.rows
+    } catch(e) {
+      throw 'there is no items'      
+    }
     },
+
     async getTags() {
+      try {
       const tags = await postgres.query(`SELECT * FROM tags` )
+      if(!tags)throw 'there is no tags'
       return tags.rows
+    } catch(e) {
+      throw 'there is no tags'      
+    }
     },
     async getTagsForItem(id) {
       const tagsQuery = {
         text: `
-        SELECT tag.id as id, tag.title as title
+        SELECT tag.id, tag.title 
         FROM items item
         JOIN itemtags itemtag ON item.id=itemtag.itemid
         JOIN tags tag ON itemtag.tagid=tag.id
@@ -150,10 +176,10 @@ module.exports = function(postgres) {
       }
       try {
         const tags = await postgres.query(tagsQuery)
-        if (!tags) throw 'Tags not found.'
+        if (!tags) throw 'there is no tags'
         return tags.rows
       } catch (e) {
-        throw 'Tags not found.'
+        throw 'there is no tags'
       }
     },
     async saveNewItem({ item, image, user }) {

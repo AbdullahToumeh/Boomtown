@@ -52,10 +52,10 @@ module.exports = function(app) {
           throw new ApolloError(e)
         }
       },
-      async items(parent,{filter},{pgResource},info) {
+      async items(parent,{id},{pgResource},info) {
         // @TODO: Replace this mock return statement with the correct items from Postgres
         try {
-          const items = await pgResource.getItems(filter)
+          const items = await pgResource.getItems(id)
           return items
         } catch (e) {
           throw new ApolloError(e)
@@ -65,7 +65,7 @@ module.exports = function(app) {
       async tags(parent,{id},{pgResource},info) {
         // @TODO: Replace this mock return statement with the correct tags from Postgres
         try {
-          const tags = await pgResource.getTags(id)
+          const tags = await pgResource.getTags()
           return tags
         } catch (e) {
           throw new ApolloError(e)
@@ -86,16 +86,23 @@ module.exports = function(app) {
        *
        */
       // @TODO: Uncomment these lines after you define the User type with these fields
-      items(parent, { id }, { pgResource }, info) {
-        // @TODO: Replace this mock return statement with the correct items from Postgres
-        const items = pgResource.getItemsForUser(parent.id)
-        return items
+      async items(parent,{id},{pgResource},info) {
+        try{
+          const itemsForUser = await pgResource.getItemsForUser(parent.id)
+        return itemsForUser
+        } catch (e) {
+          throw new ApolloError(e)
+        }
         // -------------------------------
       },
-      borrowed(parent, { id }, { pgResource }, info) {
-        // @TODO: Replace this mock return statement with the correct items from Postgres
-        const items = pgResource.getBorrowedItemsForUser(parent.id)
-        return items
+
+      async borrowed(parent, { id }, { pgResource }, info) {
+        try {
+        const BorrowedItemsForUser = await pgResource.getBorrowedItemsForUser(parent.id)
+        return BorrowedItemsForUser
+        } catch (e) {
+          throw new ApolloError(e)
+        }
         // -------------------------------
       }
       // -------------------------------
@@ -115,8 +122,12 @@ module.exports = function(app) {
       // @TODO: Uncomment these lines after you define the Item type with these fields
       async itemowner(parent, { id }, { pgResource }, info) {
         // @TODO: Replace this mock return statement with the correct user from Postgres
+        try {
         const itemowner = await pgResource.getUserById(parent.ownerid)
         return itemowner
+        } catch (e) {
+          throw new ApolloError(e)
+        }
         // return {
       //     id: 29,
       //     fullname: "Mock user",
