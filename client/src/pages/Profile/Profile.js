@@ -13,4 +13,4 @@ const Profile = ({ classes }) => {
   )
 }
 
-export default withStyles(styles)(Items)
+export default withStyles(styles)(Profile)
