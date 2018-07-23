@@ -4,27 +4,18 @@ import React from 'react'
 import Typography from '@material-ui/core/Typography'
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
-import {ITEM_QUERY} from '../../apollo/queries';
-// import { Redirect } from 'react-router-dom'
+import {ALL_TAGS_QUERY, ALL_USER_ITEMS_QUERY, ALL_ITEMS_QUERY} from '../../apollo/queries';
+import { Redirect } from 'react-router-dom'
 
 import AccountForm from '../../components/AccountForm'
-
 import styles from './styles'
 
-const GET_TAGS = gql`
-  {
-    tags {
-      title  
-    }
-  }
-`;
 
 const Home = ({ classes }) => (
-  <Query query={GET_TAGS} variables ={{"filter":2}}>
+  <Query query={ALL_ITEMS_QUERY} variables={{"id": 1}} >
   {({ loading, error, data }) => {
     if (loading) return "Loading...";
     if (error) return `Error! ${error.message}`;
-
   return (
     <Grid
       container
@@ -33,7 +24,6 @@ const Home = ({ classes }) => (
       alignItems="center"
       justify="center"
     >
-    {console.log(data)}
       <Grid item xs={12} sm={12} md={6}>
         <Typography
           variant="button"

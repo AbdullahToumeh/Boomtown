@@ -58,7 +58,7 @@ import client from './apollo'
  */
 
 // @TODO: Remove this import once you have your router working below
-import Home from './pages/Home'
+// import Home from './pages/Home'
 // -------------------------------
 
 import './index.css'
@@ -71,9 +71,7 @@ const App = () => {
       <ApolloProvider client={client}>
         <BrowserRouter >
         <Routes/>
-        </BrowserRouter >
-        <Home />
-        <Profile />
+        </BrowserRouter >      
       </ApolloProvider>
     </MuiThemeProvider>
   )

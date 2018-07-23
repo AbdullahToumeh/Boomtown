@@ -109,8 +109,7 @@ module.exports = function(postgres) {
          *  to your query text using string interpolation
          */
 
-        // text: `SELECT * FROM items ${idToOmit ? 'WHERE items.ownerid != $1':''}`,
-        // values: idToOmit ? [idToOmit] : 
+ 
         text: `SELECT * FROM items WHERE (ownerid != $1 AND borrowerid IS NULL) OR ($1 IS NULL)`,
         values: [idToOmit]
       })

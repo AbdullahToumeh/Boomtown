@@ -7,11 +7,11 @@ import React from 'react'
 // -------------------------------
 
 import {
-  ALL_TAGS_QUERY,
+  // ALL_TAGS_QUERY,
   ALL_ITEMS_QUERY,
-  ALL_USER_ITEMS_QUERY,
-  ADD_ITEM_MUTATION
-} from '../ApolloClient/queries'
+  // ALL_USER_ITEMS_QUERY,
+  // ADD_ITEM_MUTATION
+} from '../apollo/queries'
 
 const itemsData = ({ render }) => {
   /**
@@ -23,8 +23,8 @@ const itemsData = ({ render }) => {
    * currently logged-in user once you have added authentication.
    */
   return (
-    <Query query={ALL_ITEMS_QUERY} variables={{ filter: null }}>
-      {({ data: { items }, loading, error }) => render({items , loading, error})/* what will we return? */}
+    <Query query={ALL_ITEMS_QUERY} variables={{ id: 1 }}>
+      {({ data: { items }, loading, error }) => render({items , loading, error})}
     </Query>
   ); 
   
@@ -38,6 +38,11 @@ const userItemsData = ({ userId, render }) => {
    * specific user id.
    */
   return undefined
+  // return (
+  //   <Query query={ALL_USER_ITEMS_QUERY} variables={{ filter: null }}>
+  //     {({ data: { users }, loading, error }) => render({tags , loading, error})/* what will we return? */}
+  //   </Query>
+  // ); 
 }
 
 const tagData = ({ render }) => {
@@ -45,6 +50,11 @@ const tagData = ({ render }) => {
    * @TODO: Use Apollo's <Query /> component to fetch all the tags.
    */
   return undefined
+  // return (
+  //   <Query query={ALL_TAGS_QUERY} variables={{ filter: null }}>
+  //     {({ data: { tags }, loading, error }) => render({tags , loading, error})/* what will we return? */}
+  //   </Query>
+  // ); 
 }
 
 const addItem = ({ render }) => {
@@ -59,7 +69,7 @@ const addItem = ({ render }) => {
 const ItemsContainer = adopt({
   // @TODO: Uncomment each line as you write the corresponding query.
   // tagData,
-  // itemsData,
+  itemsData,
   // userItemsData,
   // addItem
   // -------------------------------
