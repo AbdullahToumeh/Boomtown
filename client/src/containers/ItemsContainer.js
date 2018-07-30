@@ -2,77 +2,66 @@ import { adopt } from 'react-adopt'
 import { Query, Mutation } from 'react-apollo'
 import React from 'react'
 
-// @TODO: Uncommment this line when the ViewerProvider is added to the app.
-// import { ViewerContext } from '../context/ViewerProvider'
-// -------------------------------
+import { ViewerContext } from '../context/ViewerProvider'
 
 import {
-  // ALL_TAGS_QUERY,
+  ALL_TAGS_QUERY,
   ALL_ITEMS_QUERY,
-  // ALL_USER_ITEMS_QUERY,
-  // ADD_ITEM_MUTATION
+  ALL_USER_ITEMS_QUERY,
+  ADD_ITEM_MUTATION
 } from '../apollo/queries'
 
-const itemsData = ({ render }) => {
-  /**
-   * @TODO: Use Apollo's <Query /> component to fetch all the items.
-   *
-   * Note: Your query will need to filter out borrowed items.
-   *
-   * The final query will ultimately filter out items that belong to the
-   * currently logged-in user once you have added authentication.
-   */
-  return (
-    <Query query={ALL_ITEMS_QUERY} variables={{ id: 1 }}>
-      {({ data: { items }, loading, error }) => render({items , loading, error})}
+const itemsData = ({ render }) => (
+  <ViewerContext.Consumer>
+    {({ viewer }) => (
+    <Query query={ALL_ITEMS_QUERY} variables={{ filter: viewer.id }}>
+      {({ data: { items }={}, loading,error }) => render({items , loading,error})}
+    </Query>
+    )}
+  </ViewerContext.Consumer>
+  );
+
+const userItemsData = ({ userId, render }) => (
+  <ViewerContext.Consumer>
+    {({ viewer }) => (
+    <Query
+      query={ALL_USER_ITEMS_QUERY}
+      variables={{ id:userId || viewer.id }}
+    >
+      {({ data: { users }={}, loading }) => render({users , loading })}
+    </Query>
+    )}
+  </ViewerContext.Consumer>
+);
+
+const tagData = ({ render }) => (
+    <Query query={ALL_TAGS_QUERY} >
+      {({ data: { tags }={}, loading }) => render({tags , loading })}
     </Query>
   ); 
-  
-}
 
-const userItemsData = ({ userId, render }) => {
-  /**
-   * @TODO: Use Apollo's <Query /> component to fetch all of a user's items.
-   *
-   * Note: Your query will need to retrieve only items that belong to a
-   * specific user id.
-   */
-  return undefined
-  // return (
-  //   <Query query={ALL_USER_ITEMS_QUERY} variables={{ filter: null }}>
-  //     {({ data: { users }, loading, error }) => render({tags , loading, error})/* what will we return? */}
-  //   </Query>
-  // ); 
-}
+const addItem = ({ render }) => (
+  <ViewerContext.Consumer>
+    {({ viewer }) => (
+      <Mutation
+        mutation={ADD_ITEM_MUTATION}
+        refetchQueries={() => [
+          { query: ALL_USER_ITEMS_QUERY, variables: { id: viewer.id } }
+        ]}
+      >
+      {(mutation, {data, error, loading}) =>
+        render({ mutation, data, error, loading})
+      }
+      </Mutation>
+    )}
+  </ViewerContext.Consumer>
+);
 
-const tagData = ({ render }) => {
-  /**
-   * @TODO: Use Apollo's <Query /> component to fetch all the tags.
-   */
-  return undefined
-  // return (
-  //   <Query query={ALL_TAGS_QUERY} variables={{ filter: null }}>
-  //     {({ data: { tags }, loading, error }) => render({tags , loading, error})/* what will we return? */}
-  //   </Query>
-  // ); 
-}
-
-const addItem = ({ render }) => {
-  /**
-   * @TODO: Use Apollo's <Mutation /> component to use the signup mutation.
-   *
-   * Note: Be sure to use `refetchQueries` to refresh Apollo's cache with the
-   * latest items for the user.
-   */
-  return undefined
-}
 const ItemsContainer = adopt({
-  // @TODO: Uncomment each line as you write the corresponding query.
-  // tagData,
+  tagData,
   itemsData,
-  // userItemsData,
-  // addItem
-  // -------------------------------
-})
+  userItemsData,
+  addItem
+});
 
 export default ItemsContainer

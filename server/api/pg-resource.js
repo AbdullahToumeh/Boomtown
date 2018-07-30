@@ -21,7 +21,7 @@ module.exports = function(postgres) {
   return {
     async createUser({ fullname, email, password }) {
       const newUserInsert = {
-        text: '', // @TODO: Authentication - Server
+        text: 'INSERT INTO users (fullname, email, password) VALUES ($1,$2,$3);',
         values: [fullname, email, password]
       }
       try {
@@ -40,7 +40,7 @@ module.exports = function(postgres) {
     },
     async getUserAndPasswordForVerification(email) {
       const findUserQuery = {
-        text: '', // @TODO: Authentication - Server
+        text: 'SELECT  * FROM users WHERE email = $1', 
         values: [email]
       }
       try {
@@ -52,39 +52,11 @@ module.exports = function(postgres) {
       }
     },
     async getUserById(id) {
-      /**
-       *  @TODO: Handling Server Errors
-       *
-       *  Inside of our resuorce methods we get to determine wen and how errors are returned
-       *  to our resolvers using try / catch / throw semantics.
-       *
-       *  Ideally, the errors that we'll throw from our resource should be able to be used by the client
-       *  to display user feedback. This means we'll be catching errors and throwing new ones.
-       *
-       *  Errors thrown from our resource will be captured and returned from our resolvers.
-       *
-       *  This will be the basic logic for this resource method:
-       *  1) Query for the user using the given id. If no user is found throw an error.
-       *  2) If there is an error with the query (500) throw an error.
-       *  3) If the user is found and there are no errors, return only the id, email, fullname, bio fields.
-       *     -- this is important,don't return the password!
-       *
-       *  You'll need to complete the query first before attempting this exercise.
-       */
-
       const findUserQuery = {
-        text: 'SELECT  * FROM users WHERE users.id=$1', // @TODO: Basic queries
+        text: 'SELECT  * FROM users WHERE users.id=$1',
         values: [id]
       }
 
-      /**
-       *  Refactor the following code using the error handling logic described above.
-       *  When you're done here, ensure all of the resource methods in this file
-       *  include a try catch, and throw appropriate errors.
-       *
-       *  Here is an example throw statement: throw 'User was not found.'
-       *  Customize your throw statements so the message can be used by the client.
-       */
       try {
       const user = await postgres.query(findUserQuery)
       if(!user) throw 'there is no user'
@@ -97,19 +69,7 @@ module.exports = function(postgres) {
 
     async getItems(idToOmit) {
       try {
-      const items = await postgres.query({
-        /**
-         *  @TODO: Advanced queries
-         *
-         *  Get all Items. If the idToOmit parameter has a value,
-         *  the query should only return Items were the ownerid column
-         *  does not contain the 'idToOmit'
-         *
-         *  Hint: You'll need to use a conditional AND and WHERE clause
-         *  to your query text using string interpolation
-         */
-
- 
+      const items = await postgres.query({ 
         text: `SELECT * FROM items WHERE (ownerid != $1 AND borrowerid IS NULL) OR ($1 IS NULL)`,
         values: [idToOmit]
       })
@@ -123,10 +83,6 @@ module.exports = function(postgres) {
     async getItemsForUser(id) {
       try {
       const items = await postgres.query({
-        /**
-         *  @TODO: Advanced queries
-         *  Get all Items. Hint: You'll need to use a LEFT INNER JOIN among others
-         */
         text: `SELECT * FROM items WHERE items.ownerid = $1;`,
         values: [id]
       })
@@ -140,10 +96,6 @@ module.exports = function(postgres) {
     async getBorrowedItemsForUser(id) {
       try {
       const items = await postgres.query({
-        /**
-         *  @TODO: Advanced queries
-         *  Get all Items. Hint: You'll need to use a LEFT INNER JOIN among others
-         */
         text: `SELECT * FROM items WHERE items.borrowerid = $1;`,
         values: [id]
       })
@@ -215,7 +167,7 @@ module.exports = function(postgres) {
               // Convert image (file stream) to Base64
               const imageStream = image.stream.pipe(strs('base64'))
 
-              let base64Str = ''
+              let base64Str = 'data:image/*;base64,'
               imageStream.on('data', data => {
                 base64Str += data
               })
@@ -226,17 +178,23 @@ module.exports = function(postgres) {
 
                 // Generate new Item query
                 // @TODO
+                const newItemQuery = {
+                  test: "",
+                  values: []
+                }
                 // -------------------------------
+
 
                 // Insert new Item
                 // @TODO
+                const newItem = client.query(newItemQuery)
                 // -------------------------------
 
                 const imageUploadQuery = {
                   text:
                     'INSERT INTO uploads (itemid, filename, mimetype, encoding, data) VALUES ($1, $2, $3, $4, $5) RETURNING *',
                   values: [
-                    // itemid,
+                    // itemid, add the id from the newly inserted item here
                     image.filename,
                     image.mimetype,
                     'base64',
@@ -245,11 +203,13 @@ module.exports = function(postgres) {
                 }
 
                 // Upload image
-                const uploadedImage = await client.query(imageUploadQuery)
-                const imageid = uploadedImage.rows[0].id
-
+                await client.query(imageUploadQuery)
                 // Generate image relation query
                 // @TODO
+                const tagsQuery = {
+                  text: '',
+                  values: []
+                }
                 // -------------------------------
 
                 // Insert image
