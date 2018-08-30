@@ -12,7 +12,7 @@ import styles from './styles'
 
 
 const Home = ({ classes }) => (
-  <Query query={ALL_ITEMS_QUERY} variables={{"id": 1}} >
+  <Query query={ALL_ITEMS_QUERY} variables={{filter: 1}} >
   {({ loading, error, data }) => {
     if (loading) return "Loading...";
     if (error) return `Error! ${error.message}`;

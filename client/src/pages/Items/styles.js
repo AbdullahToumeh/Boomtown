@@ -1,11 +1,12 @@
 const styles = theme => ({
-    card: {
-        maxWidth: 345,
+      root: {
+        flexGrow: 1,
+        flexWrap: 'wrap',
+        height: '100%',
+        background: theme.palette.secondary.main,
+
       },
-      media: {
-        height: 0,
-        paddingTop: '56.25%', // 16:9
-      },
+
 })
 
 export default styles

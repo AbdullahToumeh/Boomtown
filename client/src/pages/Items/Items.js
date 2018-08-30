@@ -1,39 +1,33 @@
 import { withStyles } from '@material-ui/core/styles'
 import React from 'react'
 import ItemsContainer from '../../containers/ItemsContainer';
-import Appbar from '../../components/Appbar/Appbar';
-import ItemCard from './../../components/itemCard'
-
-
-
+import ItemCard from './../../components/itemCard';
+import Grid from '@material-ui/core/Grid'
 import styles from './styles'
 
 
-const Items = ({ classes }) => {
-  return (
-    <div>
-    <Appbar />
+const Items = ({ classes }) => (
     <ItemsContainer>
   {({ itemsData: { items, loading, error } }) => {
     if (loading) {
       return 'loading'
     }
-
+    
     if(error) {
       return 'error'
     }
- 
-    return items.map(item =>(
-      <ItemCard item={item}/>
-      
+    return(
+      <Grid container spacing={24} className={classes.root}>
+      {items.map(item =>(
+      <Grid item key={item.id} xs={12} sm={6} lg={4}>
+        <ItemCard item={item} />
+      </Grid>     
+    ))}
+  </Grid>
     )
-  )
-  }}
-    </ItemsContainer>
-    </div>
-      
-  )
-}
+    }}
+    </ItemsContainer>    
+)
 
 export default withStyles(styles)(Items)
 

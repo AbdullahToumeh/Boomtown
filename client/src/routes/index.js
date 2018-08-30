@@ -5,6 +5,8 @@ import Profile from '../pages/Profile';
 import Home from '../pages/Home';
 import Share from '../pages/Share';
 import { ViewerContext } from '../context/ViewerProvider';
+import Appbar from '../components/Appbar/Appbar';
+
 
 
 
@@ -21,7 +23,8 @@ export default () => (
           )
         }
         return (
-          <React.Fragment>                
+          <React.Fragment> 
+            <Appbar />              
             <Switch>
               
               <Route exact path="/items"  component={Items} />      

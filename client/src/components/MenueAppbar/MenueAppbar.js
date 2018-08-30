@@ -3,6 +3,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AuthContainer from '../../containers/AuthContainer'
+import { Link } from 'react-router-dom'
+import { ViewerContext } from '../../context/ViewerProvider'
+
+
 
 const options = [
   'Your Profile',
@@ -49,6 +54,8 @@ class LongMenu extends React.Component {
             },
           }}
         >
+
+
           {options.map(option => (
             <MenuItem key={option} selected={option === 'Pyxis'} onClick={this.handleClose}>
               {option}

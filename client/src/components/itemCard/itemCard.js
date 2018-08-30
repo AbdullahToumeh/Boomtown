@@ -16,11 +16,10 @@ import {
 import moment from 'moment';
 
 const ItemCard = ({ classes, item }) => (
-    <div>
       <Card className={classes.card}>
           <CardMedia
             className={classes.media}
-            image={ item.imageUrl }
+            image={ item.imageurl }
           />
           <CardHeader
             avatar={
@@ -35,7 +34,7 @@ const ItemCard = ({ classes, item }) => (
           <Typography gutterBottom variant="headline" component="h2">
             {item.title}
           </Typography>
-          <Typography variant="caption" gutterBottom align="start">
+          <Typography variant="caption" gutterBottom >
           {item.tags.map(tag => tag.title).join(', ')}
           </Typography>
           <Typography variant="subheading" gutterBottom>
@@ -48,7 +47,6 @@ const ItemCard = ({ classes, item }) => (
         </Button>          
         </CardActions>
       </Card>
-    </div>
   );
 
 

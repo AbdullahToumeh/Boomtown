@@ -1,11 +1,7 @@
 var strs = require('stringstream')
 
 function tagsQueryString(tags, itemid, result) {
-  /**
-   * Challenge:
-   * This function is recursive, and a little complicated.
-   * Can you refactor it to be simpler / more readable?
-   */
+  tags = tags.map(t => t.id)
   const length = tags.length
   return length === 0
     ? `${result};`
@@ -47,16 +43,15 @@ module.exports = function(postgres) {
         const user = await postgres.query(findUserQuery)
         if (!user) throw 'User was not found.'
         return user.rows[0]
-      } catch (e) {
+        } catch (e) {
         throw 'User was not found.'
-      }
+        }
     },
     async getUserById(id) {
       const findUserQuery = {
         text: 'SELECT  * FROM users WHERE users.id=$1',
         values: [id]
       }
-
       try {
       const user = await postgres.query(findUserQuery)
       if(!user) throw 'there is no user'
@@ -64,56 +59,63 @@ module.exports = function(postgres) {
       } catch(e) {
         throw 'there is no user'
       }
-      // -------------------------------
     },
-
     async getItems(idToOmit) {
       try {
       const items = await postgres.query({ 
-        text: `SELECT * FROM items WHERE (ownerid != $1 AND borrowerid IS NULL) OR ($1 IS NULL)`,
+        text: `Select item.id, item.title, item.description, item.created, item.ownerid, item.borrowerid, upload.data as imageurl
+                  From items item
+                      INNER JOIN uploads upload
+                      ON upload.itemid = item.id
+                  WHERE (ownerid != $1 AND borrowerid IS Null) OR ($1 IS Null)`,
         values: [idToOmit]
       })
       if(!items)throw 'there is no items'
       return items.rows
-    } catch(e) {
+      } catch(e) {
       throw 'there is no items'
-    }
+      }
     },
-
     async getItemsForUser(id) {
       try {
       const items = await postgres.query({
-        text: `SELECT * FROM items WHERE items.ownerid = $1;`,
+        text: `Select item.id, item.title, item.description, item.created, item.ownerid, item.borrowerid, upload.data as imageurl
+                  From items item
+                      INNER JOIN uploads upload
+                      ON upload.itemid = item.id
+                  WHERE ownerid = $1`,
         values: [id]
       })
       if(!items)throw 'there is no items'
       return items.rows
-    } catch(e) {
+      } catch(e) {
       throw 'there is no items'      
-    }
+      }
     },
-
     async getBorrowedItemsForUser(id) {
       try {
       const items = await postgres.query({
-        text: `SELECT * FROM items WHERE items.borrowerid = $1;`,
+        text: `Select item.id, item.title, item.description, item.created, item.ownerid, item.borrowerid, upload.data as imageurl
+                  From items item
+                      INNER JOIN uploads upload
+                      ON upload.itemid = item.id
+                  WHERE borrowerid = $1`,
         values: [id]
       })
       if(!items)throw 'there is no items'
       return items.rows
-    } catch(e) {
+      } catch(e) {
       throw 'there is no items'      
-    }
+      }
     },
-
     async getTags() {
       try {
       const tags = await postgres.query(`SELECT * FROM tags` )
       if(!tags)throw 'there is no tags'
       return tags.rows
-    } catch(e) {
+      } catch(e) {
       throw 'there is no tags'      
-    }
+      }
     },
     async getTagsForItem(id) {
       const tagsQuery = {
@@ -136,65 +138,31 @@ module.exports = function(postgres) {
       }
     },
     async saveNewItem({ item, image, user }) {
-      /**
-       *  @TODO: Adding a New Item
-       *
-       *  Adding a new Item to Posgtres is the most advanced query.
-       *  It requires 3 separate INSERT statements.
-       *
-       *  All of the INSERT statements must:
-       *  1) Proceed in a specific order.
-       *  2) Succeed for the new Item to be considered added
-       *  3) If any of the INSERT queries fail, any successful INSERT
-       *     queries should be 'rolled back' to avoid 'orphan' data in the database.
-       *
-       *  To achieve #3 we'll ue something called a Postgres Transaction!
-       *  The code for the transaction has been provided for you, along with
-       *  helpful comments to help you get started.
-       *
-       *  Read the method and the comments carefully before you begin.
-       */
-
       return new Promise((resolve, reject) => {
-        /**
-         * Begin transaction by opening a long-lived connection
-         * to a client from the client pool.
-         */
         postgres.connect((err, client, done) => {
           try {
-            // Begin postgres transaction
             client.query('BEGIN', err => {
-              // Convert image (file stream) to Base64
               const imageStream = image.stream.pipe(strs('base64'))
-
               let base64Str = 'data:image/*;base64,'
               imageStream.on('data', data => {
                 base64Str += data
               })
-
               imageStream.on('end', async () => {
-                // Image has been converted, begin saving things
                 const { title, description, tags } = item
-
-                // Generate new Item query
-                // @TODO
                 const newItemQuery = {
-                  test: "",
-                  values: []
+                  text: "INSERT INTO items (title, description, ownerid) VALUES ($1,$2,$3) RETURNING *;",
+                  values: [title, description, user.id]
                 }
-                // -------------------------------
+                const newItem = await client.query(newItemQuery)
+                const itemId = newItem.rows[0].id
 
-
-                // Insert new Item
-                // @TODO
-                const newItem = client.query(newItemQuery)
                 // -------------------------------
 
                 const imageUploadQuery = {
                   text:
                     'INSERT INTO uploads (itemid, filename, mimetype, encoding, data) VALUES ($1, $2, $3, $4, $5) RETURNING *',
                   values: [
-                    // itemid, add the id from the newly inserted item here
+                    itemid,
                     image.filename,
                     image.mimetype,
                     'base64',
@@ -207,24 +175,11 @@ module.exports = function(postgres) {
                 // Generate image relation query
                 // @TODO
                 const tagsQuery = {
-                  text: '',
-                  values: []
+                  text: `INSERT INTO itemtags (tagid, itemid) VALUES ${tagsQueryString([...tags], itemid, '' )}`,
+                  values: tags.map(tag => tag.id)
                 }
-                // -------------------------------
-
-                // Insert image
-                // @TODO
-                // -------------------------------
-
-                // Generate tag relationships query (use the'tagsQueryString' helper function provided)
-                // @TODO
-                // -------------------------------
-
-                // Insert tags
-                // @TODO
-                // -------------------------------
-
-                // Commit the entire transaction!
+                await client.query(tagsQuery)
+  
                 client.query('COMMIT', err => {
                   if (err) {
                     throw err
@@ -232,7 +187,7 @@ module.exports = function(postgres) {
                   // release the client back to the pool
                   done()
                   // Uncomment this resolve statement when you're ready!
-                  // resolve(newItem.rows[0])
+                  resolve(newItem.rows[0])
                   // -------------------------------
                 })
               })

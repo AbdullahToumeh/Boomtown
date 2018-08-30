@@ -51,7 +51,7 @@ module.exports = gql`
   }
 
   input AssignedBorrower {
-    id: ID!
+    id: String!
   }
 
   input NewItemInput {

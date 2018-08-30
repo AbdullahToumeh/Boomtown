@@ -13,6 +13,7 @@ import styles from './styles'
 class ShareItemForm extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       fileSelected: false,
       selectedTags: [],
@@ -20,12 +21,16 @@ class ShareItemForm extends Component {
     }
     this.fileRef = React.createRef();
   }
-  // onSubmit = values => {
-  //   this.saveItem(values, addItem)
-  // }
+
   validate = values => {
     console.log(values)
   }
+
+  handleSubmitMessage() {
+    this.setState({ submitMessage: true })
+  }
+
+  //converts an image to base64 string
   getBase64Url() {
     return new Promise(resolve => {
       const reader = new FileReader()
@@ -72,24 +77,49 @@ class ShareItemForm extends Component {
       tags
     })
   }
+
   handleCheckbox(event) {
+    this.setState({
+      selectedTags: event.target.value
+    })
+    this.validateTags()
   }
+
+  generateTagsText(tags, selected) {
+    return tags
+      .map(t => (selected.indexOf(t.id) > -1 ? t.title : false))
+      .filter(e => e)
+      .join(', ')
+  }
+
+  handleTagsPristine() {
+    this.setState({ tagsPristine: false })
+
+    this.validateTags()
+  }
+
   handleImageSelect(event){
     this.setState( {fileSelected: event.target.files[0]})
   }
 
-  async saveItem(values, tags, addItem) {
+  async saveItem(values, addItem) {
     const {
       validity,
       files: [file]
-    } = this.fileInput.current
+    } = this.fileRef.current
 
-    if (!validity.valid || file)return; 
+    if (!validity.valid || !file)return
+
+      const t = values.tags.map(t => {
+        let tag = JSON.parse(t)
+        delete tag.__typename
+        return tag
+      })
 
       try {
         const itemData = {
           ...values,
-          tags: this.applyTags(tags)
+          tags: t
         }
         await addItem.mutation({
           variables: {
@@ -101,6 +131,24 @@ class ShareItemForm extends Component {
       } catch (e) {
         console.log(e)
       }
+    }
+
+    uploadViewer(viewer, values, updateNewItem) {
+      this.props.updateNewItem({
+        ...values,
+        itemowner: {
+          fullname: viewer.fullname,
+          email: viewer.email
+        }
+      })
+    }
+
+    handleShareReset(resetImage, resetNewItem) {
+      this.setState({ selectedTags: [] })
+      this.setState({ fileSelected: false })
+      resetImage()
+      resetNewItem()
+      this.handleSubmitMessage()
     }
     
   
@@ -116,12 +164,12 @@ class ShareItemForm extends Component {
           if (error) {
             return `error: ${error.message}`
           }
+
           return (
           <Form
-            onSubmit={ values => {
-              this.saveItem(values, addItem)
-            }}
+            onSubmit={ values => {this.saveItem(values, addItem)}}
             validate={this.validate}
+
             render={({ handleSubmit, pristine, invalid, values }) => (
               <form onSubmit={handleSubmit}>
                 <FormSpy
@@ -205,6 +253,8 @@ class ShareItemForm extends Component {
     )
   }
 }
+
+
 const mapDispatchToProps = dispatch => ({
   updateNewItem(item) {
     console.log(item)
