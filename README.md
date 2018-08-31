@@ -10,31 +10,11 @@ BoomTown is a web App to share items builded with React and Redux
 - Database was built using Postgress
 - Express used as Server
 
-
-## Server
-
-Commands must be run from the `server` directory:
-
 ### Installation
 
-`npm install`
+- download the repository 
+-  run npm install
+- run the server first `npm run start:dev --prefix server`
+- run the client `npm run start --prefix client`
 
-### Run
 
-`npm run start:dev`
-
-## Client
-
-Commands must be run from the `client` directory:
-
-### Installation
-
-`npm install`
-
-### Run
-
-`npm start`
-
-### Build
-
-`npm run build`
