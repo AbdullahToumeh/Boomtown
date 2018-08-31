@@ -48,13 +48,14 @@ export const ALL_ITEMS_QUERY = gql`
 export const ALL_USER_ITEMS_QUERY = gql`
   query user($id: ID!) {
     user(id:$id){
+      id
       fullname
       email
       bio
       items{
         ...ItemFields
       }
-      borrower {
+      borrowed {
         ...ItemFields
       }
     }
@@ -79,9 +80,6 @@ export const ADD_ITEM_MUTATION = gql`
   }
 `
 
-// /**
-//  * Auth-related queries and mutations.
-//  */
 
 export const VIEWER_QUERY = gql`
   query {

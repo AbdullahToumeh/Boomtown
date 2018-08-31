@@ -2,9 +2,7 @@ const styles = theme => ({
       root: {
         flexGrow: 1,
         flexWrap: 'wrap',
-        height: '100%',
-        background: theme.palette.secondary.main,
-
+        backgroundColor: theme.palette.secondary.main,
       },
 
 })

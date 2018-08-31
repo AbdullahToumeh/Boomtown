@@ -33,7 +33,7 @@ export default () => (
               <Route exact path="/share"  component={Share} />
 
               <Redirect to="/items"  component={Items} />  
-              <Redirect from="/" exact to="/items" component={Items} />
+              {/* <Redirect from="/" exact to="/items" component={Items} /> */}
                       
             </Switch>
           </React.Fragment>

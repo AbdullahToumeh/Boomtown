@@ -16,7 +16,7 @@ module.exports = function(app) {
         }
         return null
       },
-      async user( parent, { id }, { pgResource }, info ) {
+      async user( parent, {id} , { pgResource }, info ) {
         try {
           const user = await pgResource.getUserById(id)
           return user

@@ -14,6 +14,9 @@ import {
   IconButton, 
 } from '@material-ui/core';
 import moment from 'moment';
+import Gravatar from 'react-gravatar'
+import { Link } from 'react-router-dom'
+
 
 const ItemCard = ({ classes, item }) => (
       <Card className={classes.card}>
@@ -21,16 +24,15 @@ const ItemCard = ({ classes, item }) => (
             className={classes.media}
             image={ item.imageurl }
           />
+          <Link to={`/profile/${item.itemowner.id}`}>
           <CardHeader
-            avatar={
-              <Avatar aria-label="Recipe" className={classes.avatar}>
-                R
-              </Avatar>
-            }
+            avatar={<Gravatar email={item.itemowner.email} className={classes.avatar}/>}
             title = {item.itemowner.fullname}
             subheader = {moment(item.created).fromNow()}
           />
+         </Link>
         <CardContent>
+
           <Typography gutterBottom variant="headline" component="h2">
             {item.title}
           </Typography>

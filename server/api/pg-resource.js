@@ -17,7 +17,7 @@ module.exports = function(postgres) {
   return {
     async createUser({ fullname, email, password }) {
       const newUserInsert = {
-        text: 'INSERT INTO users (fullname, email, password) VALUES ($1,$2,$3);',
+        text: 'INSERT INTO users (fullname, email, password) VALUES ($1,$2,$3) RETURNING *;',
         values: [fullname, email, password]
       }
       try {
@@ -49,7 +49,7 @@ module.exports = function(postgres) {
     },
     async getUserById(id) {
       const findUserQuery = {
-        text: 'SELECT  * FROM users WHERE users.id=$1',
+        text: 'SELECT  * FROM users WHERE id=$1',
         values: [id]
       }
       try {
@@ -150,11 +150,11 @@ module.exports = function(postgres) {
               imageStream.on('end', async () => {
                 const { title, description, tags } = item
                 const newItemQuery = {
-                  text: "INSERT INTO items (title, description, ownerid) VALUES ($1,$2,$3) RETURNING *;",
+                  text: `INSERT INTO items (title, description, ownerid) VALUES ($1,$2,$3) RETURNING *`,
                   values: [title, description, user.id]
                 }
                 const newItem = await client.query(newItemQuery)
-                const itemId = newItem.rows[0].id
+                const itemid = newItem.rows[0].id
 
                 // -------------------------------
 

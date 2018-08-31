@@ -1,5 +1,5 @@
 import { Query } from 'react-apollo'
-import React, { Fragment } from 'react'
+import React from 'react'
 
 import { VIEWER_QUERY } from '../apollo/queries'
 

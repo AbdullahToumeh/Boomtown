@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
-import { FormSpy, Form, Field } from 'react-final-form'
-import { Button, TextField, Checkbox, InputLabel,Typography } from '@material-ui/core'
+import { FormSpy, Form, Field,  } from 'react-final-form'
+import { Button, TextField, Checkbox, InputLabel,Typography, FormControl } from '@material-ui/core'
 import ItemsContainer from '../../containers/ItemsContainer'
 import { connect } from 'react-redux'
 import {
@@ -9,6 +9,8 @@ import {
   resetNewItem
 } from '../../redux/modules/ShareItemPreview'
 import styles from './styles'
+import { withStyles } from '@material-ui/core/styles'
+import validate from './helpers/validation'
 
 class ShareItemForm extends Component {
   constructor(props) {
@@ -22,12 +24,9 @@ class ShareItemForm extends Component {
     this.fileRef = React.createRef();
   }
 
-  validate = values => {
-    console.log(values)
-  }
 
   handleSubmitMessage() {
-    this.setState({ submitMessage: true })
+    this.setState({ submitted: true })
   }
 
   //converts an image to base64 string
@@ -63,10 +62,10 @@ class ShareItemForm extends Component {
   
 
   dispatchUpdate(values, updateNewItem) {
-    if (!values.imageUrl && this.state.fileSelected) {
-      this.getBase64Url().then(imageUrl => {
+    if (!values.imageurl && this.state.fileSelected) {
+      this.getBase64Url().then(imageurl => {
         updateNewItem({
-          imageUrl
+          imageurl
         })
       })
     }
@@ -151,10 +150,9 @@ class ShareItemForm extends Component {
       this.handleSubmitMessage()
     }
     
-  
-
   render() {
     const { resetImage, updateNewItem, resetNewItem } = this.props
+    const { classes } = this.props
     return (
       <ItemsContainer>
         {({ addItem, tagData: { loading, error, tags  } }) => {
@@ -166,12 +164,18 @@ class ShareItemForm extends Component {
           }
 
           return (
-          <Form
-            onSubmit={ values => {this.saveItem(values, addItem)}}
-            validate={this.validate}
 
-            render={({ handleSubmit, pristine, invalid, values }) => (
-              <form onSubmit={handleSubmit}>
+          <Form onSubmit={ values => {this.saveItem(values, addItem)}}
+            validate={validate}
+            render={({ handleSubmit, pristine, invalid, values, form }) => (
+              <form
+                className={classes.form}
+                onSubmit={event => {
+                handleSubmit(event)
+                form.reset()
+                this.handleShareReset(resetImage, resetNewItem)
+                }}
+              >
                 <FormSpy
                   subscription={{ values: true }}
                   component={({ values }) => {
@@ -181,9 +185,10 @@ class ShareItemForm extends Component {
                     return ''
                   }}
                 />
-                  <Typography variant="display4" >
+                  <Typography variant="display2" >
                     Share. Borrow. Prosper.
                   </Typography>
+
                   <Field
                    name="imageurl"
                     render={({input, meta}) => (
@@ -191,9 +196,6 @@ class ShareItemForm extends Component {
                         <Button
                           onClick={() => {
                             this.fileRef.current.click()
-                            // TODO: if i click this and there is an image
-                            // selected already, clear the image from  the state
-                            // and start over
                           }}
                         >
                           Upload an Image!
@@ -237,14 +239,25 @@ class ShareItemForm extends Component {
                     )}
                   </Field>
                 ))}              
-                <Field
-                  render={({ input, meta }) => (
-                    <Button type="submit" variant="contained" color="primary">
+                <FormControl>
+                   <Button 
+                      type="submit" 
+                      variant="contained" 
+                      color="primary" 
+                      disabled={pristine || invalid || !this.state.fileSelected}
+                    >
                       Share
                     </Button>
-                  )}
-                />
+                </FormControl>
+
+              <Typography>
+                {this.state.submitted
+                ? 'Thank you for submission'
+                : '' }               
+              </Typography>
               </form>
+
+
             )}
           />
           )
@@ -257,7 +270,6 @@ class ShareItemForm extends Component {
 
 const mapDispatchToProps = dispatch => ({
   updateNewItem(item) {
-    console.log(item)
     dispatch(updateNewItem(item))
   },
   resetNewItem() {
@@ -271,4 +283,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   undefined,
   mapDispatchToProps
-)(ShareItemForm)
+)(withStyles(styles)(ShareItemForm))

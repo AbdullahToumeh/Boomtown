@@ -23,7 +23,7 @@ const initialState = {
     title:'Name your item',
     description:'Describe your item',
     tags:[],
-    imageUrl: 'https://dummyimage.com/350x250/ded71b/141103&text=Select+your+image',
+    imageurl: 'https://dummyimage.com/350x250/ded71b/141103&text=Select+your+image',
     created: new Date(),
     itemowner: {}
 };
@@ -32,7 +32,7 @@ const initialState = {
   export default (state = initialState, action) => {
     switch(action.type){
         case RESET_IMAGE: {
-            return { ...state, imageUrl: initialState.imageUrl }
+            return { ...state, imageurl: initialState.imageurl }
         }
 
         case UPDATE_NEW_ITEM: {

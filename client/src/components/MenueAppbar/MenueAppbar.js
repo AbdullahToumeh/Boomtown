@@ -8,12 +8,6 @@ import { Link } from 'react-router-dom'
 import { ViewerContext } from '../../context/ViewerProvider'
 
 
-
-const options = [
-  'Your Profile',
-  'Sign Out'
-];
-
 const ITEM_HEIGHT = 48;
 
 class LongMenu extends React.Component {
@@ -55,11 +49,22 @@ class LongMenu extends React.Component {
           }}
         >
 
-
-          {options.map(option => (
-            <MenuItem key={option} selected={option === 'Pyxis'} onClick={this.handleClose}>
-              {option}
-            </MenuItem>
+          <ViewerContext.Consumer >
+            {({ viewer }) => (
+              <Link to={`/profile/${viewer.id}`}> 
+                <MenuItem onClick={this.handleClose}> Your Profile </MenuItem>
+              </Link>
+            )}
+          </ViewerContext.Consumer>
+          <AuthContainer>
+            {({ logout }) => {
+              return (
+                <MenuItem onClick={() => {
+                  logout.mutation()
+                }}> Log Out</MenuItem>
+              )
+            }}
+          </AuthContainer>
           ))}
         </Menu>
       </div>

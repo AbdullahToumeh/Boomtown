@@ -8,24 +8,24 @@ import styles from './styles'
 
 const Items = ({ classes }) => (
     <ItemsContainer>
-  {({ itemsData: { items, loading, error } }) => {
-    if (loading) {
-      return 'loading'
-    }
-    
-    if(error) {
-      return 'error'
-    }
-    return(
-      <Grid container spacing={24} className={classes.root}>
-      {items.map(item =>(
-      <Grid item key={item.id} xs={12} sm={6} lg={4}>
-        <ItemCard item={item} />
-      </Grid>     
-    ))}
-  </Grid>
-    )
-    }}
+      {({ itemsData: { items, loading, error } }) => {
+        if (loading) {
+          return 'loading'
+        }
+        
+        if(error) {
+          return 'error'
+        }
+        return(
+          <Grid container spacing={24} className={classes.root}>
+          {items.map(item =>(
+          <Grid item key={item.id} xs={12} sm={6} lg={4}>
+            <ItemCard item={item} />
+          </Grid>     
+        ))}
+      </Grid>
+        )
+        }}
     </ItemsContainer>    
 )
 

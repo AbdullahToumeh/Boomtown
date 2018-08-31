@@ -15,20 +15,20 @@ const itemsData = ({ render }) => (
   <ViewerContext.Consumer>
     {({ viewer }) => (
     <Query query={ALL_ITEMS_QUERY} variables={{ filter: viewer.id }}>
-      {({ data: { items }={}, loading,error }) => render({items , loading,error})}
+      {({ data: { items }={}, loading,error }) => render({items , loading, error})}
     </Query>
     )}
   </ViewerContext.Consumer>
   );
 
-const userItemsData = ({ userId, render }) => (
+const userItemsData = ({ id, render }) => (
   <ViewerContext.Consumer>
     {({ viewer }) => (
     <Query
       query={ALL_USER_ITEMS_QUERY}
-      variables={{ id:userId || viewer.id }}
+      variables={{ id:id || viewer.id }}
     >
-      {({ data: { users }={}, loading }) => render({users , loading })}
+      {({ data: { user }={}, loading, error }) => render({user , loading, error })}
     </Query>
     )}
   </ViewerContext.Consumer>
@@ -36,7 +36,7 @@ const userItemsData = ({ userId, render }) => (
 
 const tagData = ({ render }) => (
     <Query query={ALL_TAGS_QUERY} >
-      {({ data: { tags }={}, loading }) => render({tags , loading })}
+      {({ data: { tags }={}, loading, error }) => render({tags , loading, error })}
     </Query>
   ); 
 
